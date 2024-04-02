@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2>{% block title %}Home{% endblock title %}</h2>
+{% endblock header %}
+
+{% block content %}
+  <p>
+    This data server provides rain and water flow history for the Stormwater project.
+    Rain data is collected from a rain gauge, and water flow from key points like
+    the green roof and cistern are collected from the Building Automation System.
+  </p>
+  <p>
+    Learn more about this project by visiting the <a href="{{ url_for('pages.help') }}">Help page</a>.
+  </p>
+{% endblock content %}

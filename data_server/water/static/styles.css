@@ -1,0 +1,24 @@
+p {
+  max-width: 80ch;
+}
+
+dt {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+dd {
+  max-width: 80ch;
+  margin-left: 4ch;
+  color: darkcyan;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.row li {
+  margin-left: 5rem;
+  list-style: none;
+}

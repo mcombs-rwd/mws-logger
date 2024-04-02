@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MWS {% block title %}{% endblock title %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/vnd.microsoft.icon"
+    />
+  </head>
+  <body>
+    {% include("_header.html") %}
+    <section>
+      <header>{% block header %}{% endblock header %}</header>
+      <main>
+        {% block content %}
+        <p>Huh. It&apos;s blank.</p>
+        {% endblock content %}
+      </main>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2>{% block title %}Help{% endblock title %}</h2>
+{% endblock header %}
+
+{% block content %}
+  <p>Applications may request historical rain data via the API.</p>
+  <dl>
+    <dt>/rain-api</dt>
+    <dd><span>GET</span>&mdash; Entry to API</dd>
+    <dt>?meter=</dt>
+    <dd><span>GET</span>&mdash; May be one of: green_roof, white_roof, cistern</dd>
+    <dt>&amp;interval=</dt>
+    <dd><span>GET</span>&mdash; May be one of: hour, day, week, month</dd>
+    <dt>&amp;start=</dt>
+    <dd><span>GET</span>&mdash; dd-mm-yy hh:mm:ss, will be rounded to nearest period</dd>
+    <dt>&amp;stop=</dt>
+    <dd><span>GET</span>&mdash; dd-mm-yy hh:mm:ss, will be rounded to nearest period, defaults to now.</dd>
+    <dt>&amp;format=</dt>
+    <dd><span>GET</span>&mdash; May be one of: json, xml, csv. Defaults to csv.</dd>
+  </li>
+  <h2>Examples</h2>
+  <p>CSV, by day, until today</p>
+  <code>GET rain-api?meter=green_roof&amp;interval=day&amp;start=2024-03-23</code>
+  <p>JSON</p>
+  <code>GET rain-api?meter=green_roof&amp;interval=day&amp;start=2024-03-23&stop=2024-03-30&amp;format=json</code>
+{% endblock content %}

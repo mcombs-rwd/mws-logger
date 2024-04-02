@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MWS {% block title %}{% endblock title %}</title>
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/vnd.microsoft.icon"
+    />
+  </head>
+  <body>
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>
