@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from flask import Blueprint, render_template, request, current_app
 
 from water.database import get_db
@@ -37,18 +37,29 @@ def rain_api():
 
 
 def build_query(request):
-    sensor = request.args.get('sensor', 'green_roof')
-    # TODO: Add interval to query
-    # TODO: Add start & stop date to query
-    interval = request.args.get('interval', 'day')
-    start_date = request.args.get('start', datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d %H:%M")
-    end_date = request.args.get('stop', datetime.now()).strftime("%Y-%m-%d %H:%M")
+    YMD_HMS = "%Y-%m-%d %H:%M:%S"
+    # TODO: Only accept defined sensor names
+    sensor = request.args.get('sensor', default='green_roof', type=str)
+    start_date = request.args.get('start', default='', type=str)
+    try:
+        start_date = datetime.fromisoformat(start_date).strftime(YMD_HMS)
+    except:
+        start_date = datetime.now() - timedelta(days=7).strftime(YMD_HMS)
+    end_date = request.args.get('stop', default='', type=str)
+    try:
+        end_date = datetime.fromisoformat(end_date).strftime(YMD_HMS)
+    except:
+        end_date = datetime.now().strftime(YMD_HMS)
     current_app.logger.info(f"Export data.")
+    # TODO: Add interval to query
+    interval = request.args.get('interval', 'day')
     current_app.logger.info(f"{interval=}, {start_date=}, {end_date=}")
     query = (
         "SELECT logged_date, sensor, measurement "
         "FROM water "
-        f"WHERE sensor = '{sensor}' "
+        f"WHERE sensor = \"{sensor}\" "
+        f"AND logged_date >= \"{start_date}\" "
+        f"AND logged_date <= \"{end_date}\" "
         "ORDER BY logged_date ASC"
     )
     current_app.logger.info(f"{query=}")
