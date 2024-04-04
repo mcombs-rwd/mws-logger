@@ -2,8 +2,10 @@ from datetime import date, datetime, timedelta
 from flask import (Blueprint, current_app, render_template, 
                 request, make_response)
 
-from water.utilities.validate import valid_format, valid_mime, valid_sensor
+from water.utilities.validate import (valid_format, valid_mime,
+                valid_sensor, valid_start_date, valid_stop_date)
 from water.database import get_db
+
 bp = Blueprint("pages", __name__)
 
 
@@ -34,22 +36,13 @@ def rain_api():
 
 
 def build_query(request):
-    YMD_HMS = "%Y-%m-%d %H:%M:%S"
     sensor = valid_sensor(request.args.get('sensor'))
-    start_date = request.args.get('start', default='', type=str)
-    try:
-        start_date = datetime.fromisoformat(start_date).strftime(YMD_HMS)
-    except:
-        start_date = (datetime.now() - timedelta(days=7)).strftime(YMD_HMS)
-    end_date = request.args.get('stop', default='', type=str)
-    try:
-        end_date = datetime.fromisoformat(end_date).strftime(YMD_HMS)
-    except:
-        end_date = datetime.now().strftime(YMD_HMS)
+    start_date = valid_start_date(request.args.get('start'))
+    end_date = valid_stop_date(request.args.get('stop'))
     current_app.logger.info(f"Export data.")
     # TODO: Add interval to query
     interval = request.args.get('interval', 'day')
-    current_app.logger.info(f"{interval=}, {start_date=}, {end_date=}")
+    current_app.logger.info(f"{sensor=}, {interval=}, {start_date=}, {end_date=}")
     query = (
         "SELECT logged_date, sensor, measurement "
         "FROM water "
@@ -58,5 +51,5 @@ def build_query(request):
         f"AND logged_date <= \"{end_date}\" "
         "ORDER BY logged_date ASC"
     )
-    current_app.logger.info(f"{query=}")
+    current_app.logger.debug(f"{query=}")
     return query
