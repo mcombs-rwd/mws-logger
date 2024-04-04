@@ -3,7 +3,8 @@ from flask import (Blueprint, current_app, render_template,
                 request, make_response)
 
 from water.utilities.validate import (valid_format, valid_mime,
-                valid_sensor, valid_start_date, valid_stop_date)
+        valid_sensor, valid_start_date, valid_stop_date, valid_resolution)
+from water.utilities.queries import hourly_query
 from water.database import get_db
 
 bp = Blueprint("pages", __name__)
@@ -38,18 +39,11 @@ def rain_api():
 def build_query(request):
     sensor = valid_sensor(request.args.get('sensor'))
     start_date = valid_start_date(request.args.get('start'))
-    end_date = valid_stop_date(request.args.get('stop'))
+    stop_date = valid_stop_date(request.args.get('stop'))
+    resolution = valid_resolution(request.args.get('resolution'))
     current_app.logger.info(f"Export data.")
-    # TODO: Add interval to query
-    interval = request.args.get('interval', 'day')
-    current_app.logger.info(f"{sensor=}, {interval=}, {start_date=}, {end_date=}")
-    query = (
-        "SELECT logged_date, sensor, measurement "
-        "FROM water "
-        f"WHERE sensor = \"{sensor}\" "
-        f"AND logged_date >= \"{start_date}\" "
-        f"AND logged_date <= \"{end_date}\" "
-        "ORDER BY logged_date ASC"
-    )
+    current_app.logger.info(f"{sensor=}, {resolution=}, {start_date=}, {stop_date=}")
+    query = hourly_query(sensor=sensor, 
+            start_date=start_date, stop_date=stop_date)
     current_app.logger.debug(f"{query=}")
     return query
