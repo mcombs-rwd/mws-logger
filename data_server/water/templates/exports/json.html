@@ -1,16 +1,10 @@
-{% extends 'export.html' %}
-
-{% block title %}Export CSV{% endblock title %}
-
-{% block content %}
-[<br>
-  {% for observation in observations %}
+{% block content %}[
+{% for observation in observations %}
   {
     "date": "{{ observation['logged_date'].strftime("%Y-%m-%d %H:%M") }}",
     "sensor": "{{ observation['sensor'] }}",
     "measurement": "{{ observation['measurement'] }}"
-  }
-  <br>
-  {% endfor %}
-]<br>
+  },
+{% endfor %}
+]
 {% endblock content %}

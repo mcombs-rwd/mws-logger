@@ -1,6 +1,8 @@
 from datetime import date, datetime, timedelta
-from flask import Blueprint, render_template, request, current_app
+from flask import (Blueprint, current_app, render_template, 
+                request, make_response)
 
+from water.utilities.validate import valid_format, valid_mime, valid_sensor
 from water.database import get_db
 bp = Blueprint("pages", __name__)
 
@@ -24,27 +26,21 @@ def rain_api():
     if not observations:
         return render_template("pages/error.html",
                 error_message="No data found.")
-    format = request.args.get('format', 'CSV').lower()
-    if format == 'csv':
-        return render_template("exports/csv.html", observations=observations)
-    elif format == 'json':
-        return render_template("exports/json.html", observations=observations)
-    elif format == 'xml':
-        return render_template("exports/xml.html", observations=observations)
-    else:
-        return render_template("pages/error.html",
-                error_message=f"Incorrect output format: {format}")
+    format = valid_format(request.args.get('format'))
+    output = render_template(f"exports/{format}.html", observations=observations)
+    resp = make_response(output)
+    resp.mimetype = valid_mime(format)
+    return resp
 
 
 def build_query(request):
     YMD_HMS = "%Y-%m-%d %H:%M:%S"
-    # TODO: Only accept defined sensor names
-    sensor = request.args.get('sensor', default='green_roof', type=str)
+    sensor = valid_sensor(request.args.get('sensor'))
     start_date = request.args.get('start', default='', type=str)
     try:
         start_date = datetime.fromisoformat(start_date).strftime(YMD_HMS)
     except:
-        start_date = datetime.now() - timedelta(days=7).strftime(YMD_HMS)
+        start_date = (datetime.now() - timedelta(days=7)).strftime(YMD_HMS)
     end_date = request.args.get('stop', default='', type=str)
     try:
         end_date = datetime.fromisoformat(end_date).strftime(YMD_HMS)
