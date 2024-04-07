@@ -5,5 +5,6 @@ CREATE TABLE
     id INTEGER PRIMARY key autoincrement,
     logged_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sensor TEXT NOT NULL,
-    measurement INTEGER NOT NULL
+    gauge_value INTEGER NOT NULL,
+    meter_value INTEGER NOT NULL
   );

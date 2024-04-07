@@ -4,7 +4,7 @@ from flask import (Blueprint, current_app, render_template,
 
 from water.utilities.validate import (valid_format, valid_mime,
         valid_sensor, valid_start_date, valid_stop_date, valid_resolution)
-from water.utilities.queries import hourly_query
+from water.utilities.queries import hourly_detail
 from water.database import get_db
 
 bp = Blueprint("pages", __name__)
@@ -43,7 +43,7 @@ def build_query(request):
     resolution = valid_resolution(request.args.get('resolution'))
     current_app.logger.info(f"Export data.")
     current_app.logger.info(f"{sensor=}, {resolution=}, {start_date=}, {stop_date=}")
-    query = hourly_query(sensor=sensor, 
+    query = hourly_detail(sensor=sensor, 
             start_date=start_date, stop_date=stop_date)
     current_app.logger.debug(f"{query=}")
     return query
