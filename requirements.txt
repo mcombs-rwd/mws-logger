@@ -21,5 +21,7 @@ pysftp==0.2.9
 pytest==7.4.3
 python-dotenv==1.0.1
 pytz==2023.3.post1
+SQLAlchemy==2.0.29
 tomli==2.0.1
+typing_extensions==4.11.0
 Werkzeug==3.0.1
