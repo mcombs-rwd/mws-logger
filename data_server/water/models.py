@@ -19,6 +19,7 @@ class Water_reading(Base):
 
 
 class Sensor(Base):
+    # IDEA: Add relation between tables
     """Water flowmeters and rain gauges
 
     Water flow meters report total gallons, they are cumulative.

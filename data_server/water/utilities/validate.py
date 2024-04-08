@@ -35,6 +35,7 @@ def valid_stop_date(stop_date: str) -> str:
     return stop_date
 
 def valid_resolution(resolution: str) -> str:
+    # IDEA: Change to by_hour, by_day, by_month
     resolutions = ['hourly', 'daily', 'weekly', 'monthly']
     return select_in_list(resolution, resolutions, 'hourly')
 
