@@ -2,8 +2,8 @@
   <ul class="row">
     <li><a href="{{ url_for('pages.home') }}">Home</a></li>
     <li><a href="{{ url_for('pages.help') }}">Help</a></li>
-    <li><a href="{{ url_for('pages.rain_api') }}?start=2024-03-25&stop=2024-03-25">Green Roof, one day, data as CSV</a></li>
-    <li><a href="{{ url_for('pages.rain_api') }}?format=json">Green Roof, last week, as JSON</a></li>
-    <li><a href="{{ url_for('pages.rain_api') }}?sensor=rain_gauge&format=xml">Rain Gauge, last week, as XML</a></li>
+    <li><a href="{{ url_for('pages.rain_api') }}?sensor=green_roof&resolution=hourly&start=2024-03-25&stop=2024-03-25">Green Roof, one day, by hour, as CSV</a></li>
+    <li><a href="{{ url_for('pages.rain_api') }}?sensor=green_roof&resolution=daily&format=json">Green Roof, last week, by day, as JSON</a></li>
+    <li><a href="{{ url_for('pages.rain_api') }}?sensor=rain_gauge&resolution=daily&format=xml">Rain Gauge, last week, as XML</a></li>
   </ul>
 </nav>

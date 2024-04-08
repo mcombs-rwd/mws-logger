@@ -4,7 +4,7 @@ from flask import (Blueprint, current_app, render_template,
 
 from water.utilities.validate import (valid_format, valid_mime,
         valid_sensor, valid_start_date, valid_stop_date, valid_resolution)
-from water.queries import hourly_detail
+from water.queries import detail_by_hour, counter_by_day, counter_by_month
 from water.database import get_db
 
 bp = Blueprint("pages", __name__)
@@ -29,9 +29,16 @@ def rain_api():
     resolution = valid_resolution(request.args.get('resolution'))
     format = valid_format(request.args.get('format'))
     # Do the query
-    session = get_db()
     if resolution == "hourly":
-        observations = hourly_detail(
+        observations = detail_by_hour(
+            sensor=sensor,
+            start_date=start_date, stop_date=stop_date)
+    elif resolution == "daily":
+        observations = counter_by_day(
+            sensor=sensor,
+            start_date=start_date, stop_date=stop_date)
+    elif resolution == "monthly":
+        observations = counter_by_month(
             sensor=sensor,
             start_date=start_date, stop_date=stop_date)
     else:
