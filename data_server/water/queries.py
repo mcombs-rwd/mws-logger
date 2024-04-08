@@ -1,6 +1,6 @@
 from flask import current_app
 from sqlalchemy import select, extract
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from water.models import Water_reading, Sensor
 from water.database import get_db
@@ -26,19 +26,39 @@ Since we don't log 23:59, we use the 00:00 sample from the next day.
 
 
 def hourly_detail(sensor: str, start_date: datetime, stop_date: datetime) -> list[Water_reading]:
-    """Get hourly measurements for 1 days."""
+    """Get hourly measurements for n days. Day is always 00:00:00 to 23:59:00"""
     current_app.logger.info(f"hourly_detail: {sensor=}, {start_date=}")
+    start = datetime.fromisoformat(start_date)
+    stop = datetime.fromisoformat(stop_date) + timedelta(days=1, seconds=-1)
+    current_app.logger.info(f"{start=}, {stop=}")
     session = get_db()
     details = session.execute(
         select(Water_reading)
-        .filter( Water_reading.sensor_id=='green_roof')
-        .filter( extract('year', Water_reading.date) == datetime.fromisoformat(start_date).year)
-        .filter( extract('month', Water_reading.date) == datetime.fromisoformat(start_date).month)
-        .filter( extract('day', Water_reading.date) == datetime.fromisoformat(start_date).day)
+        .filter(Water_reading.sensor_id==sensor)
+        .filter(Water_reading.date >= start)
+        .filter(Water_reading.date <= stop)
     )
     results=[detail["Water_reading"] for detail in details.mappings().all()]
     current_app.logger.info(f"Query results={len(results)}")
     return results
+
+def daily_total_meter(sensor: str, start_date: datetime, stop_date: datetime) -> list[Water_reading]:
+    """Get total of values, per day, for n days"""
+    current_app.logger.info(f"hourly_detail: {sensor=}, {start_date=}")
+    start = datetime.fromisoformat(start_date)
+    stop = datetime.fromisoformat(stop_date) + timedelta(days=1, seconds=-1)
+    current_app.logger.info(f"{start=}, {stop=}")
+    session = get_db()
+    details = session.execute(
+        select(Water_reading)
+        .filter( Water_reading.sensor_id=='green_roof')
+    )
+    results=[detail["Water_reading"] for detail in details.mappings().all()]
+    current_app.logger.info(f"Query results={len(results)}")
+    return results
+
+def monthly_total_meter():
+    pass
 
 def daily_total_gauge(sensor, start_date):
     """Add up all hourly measurements, per day, for n days
@@ -59,18 +79,5 @@ def daily_total_gauge(sensor, start_date):
     return query
 
 
-def daily_total_meter(sensor, start_date):
-    """, per day, for n days
-
-    A gauge shows current value, a meter shows cumulative.
-    Water flow is today's max - yesterday's max.
-    """
-    pass
-
-
 def monthly_total_gauge():
-    pass
-
-
-def monthly_total_meter():
     pass
