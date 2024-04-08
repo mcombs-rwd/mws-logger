@@ -3,13 +3,12 @@ from datetime import datetime, timedelta
 from flask import current_app, g
 from pathlib import Path
 from random import randrange
-import sqlite3
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 
-from models import (Base, Water_reading, Sensor)
+from water.models import (Base, Water_reading, Sensor)
 
-db_filepath = Path("water.db")
+db_filepath = Path("water/water.db")
 db_url = "sqlite:///" + str(db_filepath)
 
 """Create and populate db
@@ -60,13 +59,9 @@ def add_test_data():
     click.echo("You have loaded test data into the database!")
 
 def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"],
-            detect_types=sqlite3.PARSE_DECLTYPES,
-        )
-        g.db.row_factory = sqlite3.Row
-    return g.db
+    engine = sa.create_engine(db_url, echo=True)
+    Session = sessionmaker(bind=engine)
+    return Session()
 
 def close_db(e=None):
     db = g.pop("db", None)

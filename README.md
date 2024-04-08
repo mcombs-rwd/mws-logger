@@ -9,6 +9,7 @@ and JSON for use by the Stormwater Exhibit app.
 
 ## Operation
 
+Change working directory with `cd data_server`.
 Launch with `python -m flask --app water run --port 8000`.
 Add `--debug` if needed.
 

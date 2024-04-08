@@ -2,9 +2,9 @@
 <observations>
   {% for observation in observations %}
   <observation>
-    <date>{{ observation["logged_date"].strftime("%Y-%m-%d %H:%M") }}</date>
-    <sensor>{{ observation["sensor"] }}</sensor>
-    <measurement>{{ observation["measurement"] }}</measurement>
+    <date>{{ observation["date"].strftime("%Y-%m-%d %H:%M") }}</date>
+    <sensor>{{ observation["sensor_id"] }}</sensor>
+    <value>{{ observation["value"] }}</value>
   </observation>
   {% endfor %}
 </observations>

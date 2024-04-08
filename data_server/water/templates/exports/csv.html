@@ -1,3 +1,3 @@
-{% block content %}Date (Y-M-D), Sensor, Measurement {% for observation in observations %}
-{{ observation["logged_date"].strftime("%Y-%m-%d %H:%M") }}, {{ observation["sensor"] }}, {{ observation["measurement"] }} {% endfor %}
+{% block content %}Date (Y-M-D), Sensor, Value {% for observation in observations %}
+{{ observation["date"].strftime("%Y-%m-%d %H:%M") }}, {{ observation["sensor_id"] }}, {{ observation["value"] }} {% endfor %}
 {% endblock %}

@@ -15,7 +15,7 @@ class Water_reading(Base):
     value: Mapped[int]
 
     def __repr__(self) -> str:
-        return f"<Water_reading(id={self.id}, date={self.date}, sensor={self.sensor}, value={self.value})>"
+        return f"<Water_reading(id={self.id}, date={self.date}, sensor={self.sensor_id}, value={self.value})>"
 
 
 class Sensor(Base):
