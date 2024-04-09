@@ -6,23 +6,30 @@
 
 {% block content %}
   <p>Applications may request historical rain data via the API.</p>
+
   <dl>
     <dt>/rain-api</dt>
     <dd><span>GET</span>&mdash; Entry to API</dd>
     <dt>?meter=</dt>
-    <dd><span>GET</span>&mdash; May be one of: green_roof, white_roof, cistern</dd>
-    <dt>&amp;interval=</dt>
+    <dd><span>GET</span>&mdash; May be one of: green_roof, rain_gauge</dd>
+    <dt>&amp;resolution=</dt>
     <dd><span>GET</span>&mdash; May be one of: hour, day, week, month</dd>
     <dt>&amp;start=</dt>
-    <dd><span>GET</span>&mdash; dd-mm-yy hh:mm:ss, will be rounded to nearest period</dd>
+    <dd><span>GET</span>&mdash; dd-mm-yy hh:mm, will be rounded to nearest period</dd>
     <dt>&amp;stop=</dt>
-    <dd><span>GET</span>&mdash; dd-mm-yy hh:mm:ss, will be rounded to nearest period, defaults to now.</dd>
+    <dd><span>GET</span>&mdash; dd-mm-yy hh:mm, will be rounded to nearest period, defaults to now.</dd>
     <dt>&amp;format=</dt>
     <dd><span>GET</span>&mdash; May be one of: json, xml, csv. Defaults to csv.</dd>
   </li>
+
   <h2>Examples</h2>
-  <p>CSV, by day, until today</p>
-  <code>GET rain-api?meter=green_roof&amp;interval=day&amp;start=2024-03-23</code>
+  <p>For green_roof, from a week ago to now, by day, as CSV</p>
+  <code>GET rain-api?meter=green_roof&amp;resolution=day&amp;start=2024-03-23</code>
   <p>JSON</p>
-  <code>GET rain-api?meter=green_roof&amp;interval=day&amp;start=2024-03-23&stop=2024-03-30&amp;format=json</code>
-{% endblock content %}
+  <code>GET rain-api?meter=green_roof&amp;resolution=day&amp;start=2024-03-23&stop=2024-03-30&amp;format=json</code>
+  
+  <h2>Resources</h2>
+  <p>YouTube: <a href="https://www.youtube.com/watch?v=-2QW-D0B2nw">Get JSON API Data into Google Sheets</a></p>
+  <p>YouTube: <a href="https://www.youtube.com/watch?v=1I6PDttljI0&amp;t=357">Send Birthday Greetings Daily Using Google Apps Script</a></p>
+
+  {% endblock content %}

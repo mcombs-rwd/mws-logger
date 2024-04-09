@@ -1,10 +1,15 @@
 # Data Server
 
-This app answers requests with data fetched from the database.
+This app provides a REST API to get measurements from water meters and the
+rain gauge associated with the Stormwater project. Queries can specify a
+specific sensor, date range, and hour/day/week/month resolution for history.
+It supports XML and CSV formats for easy import into spreadsheets,
+and JSON for use by the Stormwater Exhibit app.
 
 
 ## Operation
 
+Change working directory with `cd data_server`.
 Launch with `python -m flask --app water run --port 8000`.
 Add `--debug` if needed.
 

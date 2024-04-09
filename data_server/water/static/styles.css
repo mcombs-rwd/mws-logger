@@ -16,9 +16,16 @@ dd {
 .row {
   display: flex;
   flex-direction: row;
+  justify-items: center;
 }
 
 .row li {
-  margin-left: 5rem;
+  margin-left: 2rem;
   list-style: none;
+}
+
+.button {
+  max-width: 25ch;
+  padding: 1rem;
+  border: 1px solid rgb(138, 74, 166);
 }

@@ -1,8 +1,12 @@
-<!-- TODO: Add XML and JSON to nav -->
 <nav>
   <ul class="row">
-    <li><a href="{{ url_for('pages.home') }}">Home</a></li>
-    <li><a href="{{ url_for('pages.help') }}">Help</a></li>
-    <li><a href="{{ url_for('pages.rain_api') }}">All data as CSV</a></li>
+    <li class="button"><a href="{{ url_for('pages.home') }}">Home</a></li>
+    <li class="button"><a href="{{ url_for('pages.help') }}">Help</a></li>
+    <li class="button"><a href="{{ url_for('pages.rain_api') }}?sensor=rain_gauge&resolution=hourly&start=2024-03-24&stop=2024-03-24&format=csv">
+      Rain Gauge,<br> one day, by hour,<br> as CSV</a></li>
+    <li class="button"><a href="{{ url_for('pages.rain_api') }}?sensor=green_roof&resolution=daily&start=2024-03-24&stop=2024-03-30&format=json">
+      Green Roof,<br> one week, by day,<br> as JSON</a></li>
+    <li class="button"><a href="{{ url_for('pages.rain_api') }}?sensor=green_roof&resolution=monthly&start=2024-02-01&stop=2024-04-30&format=xml">
+      Green Roof,<br> three months, by month,<br> as XML</a></li>
   </ul>
 </nav>
