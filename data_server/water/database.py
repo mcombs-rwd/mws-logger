@@ -26,7 +26,7 @@ def init_app(app):
 def init_db():
     if db_filepath.exists():
         db_filepath.unlink()
-    engine = sa.create_engine(db_url, echo=True)
+    engine = sa.create_engine(db_url, echo=False)
     Session = sessionmaker(bind=engine)
     Base.metadata.create_all(engine)
     click.echo("You have initialized the database.")
