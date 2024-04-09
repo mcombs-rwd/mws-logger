@@ -26,6 +26,7 @@ Since we don't log 23:59, we use the 00:00 sample from the next day.
 
 
 # IDEA: If date isn't in db, return error or closest match?
+# IDEA: Refactor with Lib/calendar.py
 
 ##########
 # Utilities
@@ -39,6 +40,14 @@ def calc_day_start(date_and_time: datetime) -> datetime:
 def calc_day_end(date_and_time: datetime) -> datetime:
     """This returns the end of the day. This might not be in the db."""
     return datetime.fromisoformat(date_and_time) + timedelta(days=1, seconds=-1)
+
+def calc_month_end(date_and_time: datetime) -> datetime:
+    """This returns the last day (and minute) of the month. It might not be in the db."""
+    end_of_day = date_and_time + timedelta(days=1, seconds=-1)
+    # The day 28 exists in every month. 4 days later, it's always next month
+    next_month = end_of_day.replace(day=28) + timedelta(days=4)
+    # subtracting the number of the current day brings us back one month
+    return next_month - timedelta(days=next_month.day)
 
 def first_real_date(sensor: str, date_min: datetime) -> datetime:
     """Find exact earliest qualified date in the db"""
@@ -72,20 +81,21 @@ def detail_by_hour(sensor: str, start_date: datetime, stop_date: datetime) -> li
     start = first_real_date(sensor, start_date)
     stop = calc_day_end(stop_date)
     current_app.logger.info(f"{start=}, {stop=}")
-    session = get_db()
-    details = session.execute(
-        select(Water_reading)
-        .filter(Water_reading.sensor_id == sensor)
-        .filter(Water_reading.date >= start)
-        .filter(Water_reading.date <= stop)
-    )
-    results = [detail["Water_reading"] for detail in details.mappings().all()]
-    current_app.logger.info(f"Query results={len(results)}")
+    with get_db() as session:
+        details = session.execute(
+            select(Water_reading)
+            .filter(Water_reading.sensor_id == sensor)
+            .filter(Water_reading.date >= start)
+            .filter(Water_reading.date <= stop)
+        )
+        results = [detail["Water_reading"] for detail in details.mappings().all()]
+        current_app.logger.info(f"Query results={len(results)}")
     return results
+
 
 def counter_by_day(sensor: str, start_date: datetime, stop_date: datetime) -> list[Water_reading]:
     """Get total of values, per day, for n days"""
-    current_app.logger.info(f"counter_by_day: {sensor=}, {start_date=}")
+    current_app.logger.info(f"counter_by_day: {sensor=}, {start_date=}, {stop_date=}")
     start = first_real_date(sensor, start_date)
     stop = last_real_date(sensor, stop_date)
     days_total = (stop - start).days + 1
@@ -112,33 +122,53 @@ def counter_by_day(sensor: str, start_date: datetime, stop_date: datetime) -> li
     return results
 
 
-def counter_by_month(sensor: str, start_date: datetime, stop_date: datetime) -> list[Water_reading]:
-    """Get total of values, per month, for n months"""
-    current_app.logger.info(f"counter_by_day: {sensor=}, {start_date=}")
-    start = first_real_date(sensor, stop_date)
-    stop = last_real_date(sensor, stop_date)
-    days_total = (stop - start).days + 1
-    current_app.logger.info(f"{start=}, {stop=}, {days_total=}")
-    session = get_db()
-    results = []
-    for days in range(days_total):
-        day_to_sum = start + timedelta(days=days)
-        end_to_sum = day_to_sum + timedelta(days=1)
+def total_of_range(sensor: str, start_date: datetime, stop_date: datetime) -> int:
+    """Get the total value for a date range. Subtract last from first."""
+    current_app.logger.info(f"total_of_range: {sensor=}, {start_date=}, {stop_date=}")
+    with get_db() as session:
         counter_start = session.execute(
-            select(Water_reading.value)
+            select(func.min(Water_reading.value))
             .filter(Water_reading.sensor_id == sensor)
-            .filter(Water_reading.date == day_to_sum)
-        ).first()
-        counter_stop = session.execute(
-            select(Water_reading.value)
-            .filter(Water_reading.sensor_id == sensor)
-            .filter(Water_reading.date == end_to_sum)
+            .filter(Water_reading.date == start_date)
         ).scalar()
-        print(f"\n\n{counter_stop=}, {counter_start._asdict()['value']=}")
-        results.append({"sensor_id": sensor, "date": day_to_sum,
-                    "value": counter_stop-counter_start[0]})
-    current_app.logger.info(f"Query results={len(results)}")
-    return results
+        counter_stop = session.execute(
+            select(func.max(Water_reading.value))
+            .filter(Water_reading.sensor_id == sensor)
+            .filter(Water_reading.date <= stop_date)
+        ).scalar()
+        print(f"counter_stop {counter_stop}")
+        print(f"counter_start {counter_start}")
+        range_total = counter_stop - counter_start
+        current_app.logger.info(f"Query results: {counter_stop=}, {counter_start=}, total={range_total}")
+    return range_total
+
+
+def counter_by_month(sensor: str, start_date: datetime, stop_date: datetime) -> list[Water_reading]:
+    """Get total of values, per month, for n months
+    
+    If start_date isn't 1st of month, 1st month will miss some days.
+    If stop_date isn't last of month, last month will miss some days.
+    Months in the middle will be complete.
+    """
+    current_app.logger.info(f"counter_by_month: {sensor=}, {start_date=}, {stop_date=}")
+    start = first_real_date(sensor, start_date)
+    stop = last_real_date(sensor, stop_date)
+    months_total = (stop.month - start.month) + 1  # 4thmo - 3rdmo + 1 = 2
+    current_app.logger.info(f"{start=}, {stop=}, {months_total=}")
+    monthly_totals = []
+    for months in range(months_total):  # You can't put datetime in a range :(
+        if months == 0:  # 1st month could be partial
+            start_of_period = start
+        else:
+            start_of_period = start.replace(month=start.month+months, day=1)
+        print(f"{start_of_period=}")
+        end_of_period = calc_month_end(start_of_period)
+        monthly_total = total_of_range(sensor, start_of_period, end_of_period)
+        monthly_totals.append({"sensor_id": sensor, "date": start_of_period,
+                    "value": monthly_total})
+    current_app.logger.info(f"Query results={len(monthly_totals)}")
+    return monthly_totals
+
 
 def daily_total_gauge(sensor, start_date):
     pass
