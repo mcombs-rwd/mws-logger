@@ -26,7 +26,6 @@ def init_app(app):
 def init_db():
     if db_filepath.exists():
         db_filepath.unlink()
-
     engine = sa.create_engine(db_url, echo=True)
     Session = sessionmaker(bind=engine)
     Base.metadata.create_all(engine)
@@ -35,8 +34,8 @@ def init_db():
 
 # @click.command("add-test-data")
 def add_test_data():
-    engine = sa.create_engine(db_url, echo=True)
-    Session = sessionmaker(bind=engine)
+    Session = get_db()
+    session = Session
     start_date = datetime.fromisoformat("2024-03-01 00:00:00") # yyyy-mm-dd hh:mm:ss
     water_meter = Sensor(id="green_roof", name="Green Roof", cumulative=True, units="gallons")
     rain_gauge = Sensor(id="rain_gauge", name="NASH Rain Gauge", cumulative=False, units="inches")
@@ -59,6 +58,7 @@ def add_test_data():
     click.echo("You have loaded test data into the database!")
 
 def get_db():
+    """Used in other methods to get a session"""
     engine = sa.create_engine(db_url, echo=True)
     Session = sessionmaker(bind=engine)
     return Session()
