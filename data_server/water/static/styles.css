@@ -2,6 +2,13 @@ p {
   max-width: 80ch;
 }
 
+code {
+  max-width: 100ch;
+  position: relative;
+  top: -1rem;
+  color: darkcyan;
+}
+
 dt {
   margin-top: 1rem;
   font-weight: bold;

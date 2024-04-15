@@ -25,6 +25,7 @@ Create folder for server app. `users/macombs/stormwater exhibit/data server`
 Create virtual environment and install packages.
 
 ```shell
+c:\ cd 'data_server'
 c:\ python -m venv venv
 c:\ venv\Scripts\activate.bat
 c:\ pip install -r requirements.txt
