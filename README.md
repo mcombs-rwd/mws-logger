@@ -9,8 +9,12 @@ and JSON for use by the Stormwater Exhibit app.
 
 ## Operation
 
-Change working directory with `cd data_server`.
-Launch with `python -m flask --app water run --port 8000`.
+Change to the Stormwater Exhibit directory.
+
+Activate environment: `c:\ venv\Scripts\activate.bat`
+
+Change working directory: `cd data_server`.
+Launch: `python -m flask --app water run --port 8000`.
 Add `--debug` if needed.
 
 Test by visiting `http://localhost:8000`.
