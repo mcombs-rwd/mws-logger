@@ -1,0 +1,103 @@
+# Nashville MWS BACnet monitoring configuration
+
+network:
+  my_ip: '10.76.148.128'
+  my_ip_mask: '23'
+  bbmd_ip: '10.117.75.17:47808' # with port
+
+poll_interval: 15  # in minutes
+
+automation_servers:
+  # In xlsx files,
+  #  'NAME' column should contain:
+  #    AirFl, EaFl, SaFl, TotalEaFl, TotalSaFl,
+  #    HVACModeStatus, RmTmp, C02
+  #  'ForeignAddress' column should be:
+  #    <analog-value, 126>
+  #    <multi-state-value, 26>
+  - 
+    ip: '10.117.75.12'
+    file: ../device_specs/ASP-1A_VAV_Object_IDs.xlsx  # 151 oids
+    desc: AHU-1A, Labs 1st-2nd
+  - 
+    ip: '10.117.75.12'
+    file: ../device_specs/ASP-1B_VAV_Object_IDs.xlsx  # 81 oids
+    desc: AHU-1B, Labs 3rd
+  - 
+    ip: '10.117.75.13'
+    file: ../device_specs/ASP-2_VAV_Object_IDs.xlsx  # 108 oids
+    desc: AHU-2, 2nd Floor South and 1st Floor VAVs
+  - 
+    ip: '10.117.75.14'
+    file: ../device_specs/ASP-3_VAV_Object_IDs.xlsx  # 146 oids
+    desc: AHU-3, 2nd Floor and 3rd Floor North VAVs
+  - 
+    ip: '10.117.75.15'
+    file: ../device_specs/ASP-4_VAV_Object_IDs.xlsx  # 217 oids
+    desc: AHU-4, 3rd Floor and 4th Floor South VAVs
+  - 
+    ip: '10.117.75.16'
+    file: ../device_specs/ASP-5_VAV_Object_IDs.xlsx  # 131 oids
+    desc: AHU-5, 4th Floor North
+  - 
+    ip: '10.117.75.17'
+    file: ../device_specs/ASP-6.xlsx  # 15 oids
+    desc: NPW/Chw/Irrigation water, power submeters and transformers
+
+wide_table: True
+wide_csv: '../sample_data/hvac_data-wide2.csv'  # local test
+# wide_csv: '/xampp/htdocs/hvac_data/hvac_data-wide.csv'  # production
+# wide_csv: '../../ncsu-building-systems-kiosk/assets/hvac_data/hvac_data-wide.csv'
+wide_headings: ['Date', 'IP', 'Category',  # 0-2
+                'Floor', 'Name',  # 3-4 derived
+                'HVACModeStatus', 'RmTmp', 'SaFl', 'EaFl', 'CO2',  # 5-9
+                'NPW', 'ChW', 'wh', 'kwh',  # 10-13
+                'Gallon rate', 'Watt rate']
+
+tall_table: True
+tall_csv: '../sample_data/hvac_data-tall.csv'  # local test
+# tall_csv: '/xampp/htdocs/hvac_data/hvac_data-tall.csv'  # production
+# tall_csv: '../../ncsu-building-systems-kiosk/assets/hvac_data/hvac_data-tall.csv'
+tall_headings: ['Date', 'IP', 'Type', 'ID', 'Name', 'Value']
+
+test_csv: '../sample_data/test_data-tall.csv'
+# test_csv: 'sample_data/test_power-tall.csv'
+# test_csv: 'sample_data/test_water-tall.csv'
+
+hvac_states:
+  '1': Occupied Cooling
+  '2': Occupied Heating
+  '3': Standby Cooling
+  '4': Standby Heating
+  '5': Setup  # not seen
+  '6': Setback  # not seen
+  '7': 'Off'
+  '8': Fire  # not seen
+  '9': Dehumidification Mode
+  '10': Door Override Setback Mode
+  '11': Door Override Setup Mode  # not seen
+
+# Monitored metrics are either gauges (like fuel) or counters (like odometer).
+# Guages range between min and max.
+# Counters always increase until they reach their maximum, then wrap.
+
+######
+# These values are here for future use. They need to be factored out of the
+# code.
+######
+# water_counters: [
+#   'CalcNPWTotal_gal', 'NPWIrrigationMtr_gal', 'CalcDomChwTotal_gal',
+#   'CalcNPWTotal', 'NPWIrrigationMtr', 'CalcDomChwTotal',
+#   ]
+# power_counters: ['El_SubMtr', 'Service_Transformer']
+# attributes: [
+#   'SaFl', 'EaFl', 'RmTmp', 'HVACModeStatus', 'CO2',
+#   'NPW', 'ChW', 'W h', 'kW h',
+#   ]
+# counters: {  # Column name of counter, col name to store delta
+#   'NPW': 'Gallon rate',
+#   'ChW': 'Gallon rate',
+#   'wh': 'Watt rate',
+#   'kwh': 'Watt rate',
+#   }
+# kilo_units: ['kwh']  # Multiply this column by 1000 before storing
