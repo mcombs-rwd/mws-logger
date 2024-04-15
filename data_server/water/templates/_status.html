@@ -1,0 +1,8 @@
+<section>
+  <h1>System Status</h1>
+  {% block content %}
+  <p>BACnet logger: <span>{{ status["bacnet"] }}</span></p>
+  <p>Rain Gauge logger: <span>{{ status["rain_gauge"] }}</span></p>
+  <p>Database: <span>{{ status["database"] }}</span></p>
+  {% endblock content %}
+</section>

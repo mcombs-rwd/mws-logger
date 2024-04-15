@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 from flask import (Blueprint, current_app, render_template, 
                 request, make_response)
 
+from water.utilities.status import get_status
 from water.utilities.validate import (valid_format, valid_mime,
         valid_sensor, valid_start_date, valid_stop_date, valid_resolution)
 from water.queries import detail_by_hour, counter_by_day, counter_by_month
@@ -12,12 +13,12 @@ bp = Blueprint("pages", __name__)
 
 @bp.route("/")
 def home():
-    return render_template("pages/home.html")
+    return render_template("pages/home.html", status=get_status())
 
 
 @bp.route("/help")
 def help():
-    return render_template("pages/help.html")
+    return render_template("pages/help.html", status=get_status())
 
 
 @bp.route("/rain-api", methods=["GET"])
@@ -48,18 +49,6 @@ def rain_api():
                 error_message="No data found.")
     output = render_template(f"exports/{format}.html", observations=observations)
     resp = make_response(output)
+    # IDEA: Set default download name, start download
     resp.mimetype = valid_mime(format)
     return resp
-
-
-# def build_query(request):
-#     sensor = valid_sensor(request.args.get('sensor'))
-#     start_date = valid_start_date(request.args.get('start'))
-#     stop_date = valid_stop_date(request.args.get('stop'))
-#     resolution = valid_resolution(request.args.get('resolution'))
-#     current_app.logger.info(f"Export data.")
-#     current_app.logger.info(f"{sensor=}, {resolution=}, {start_date=}, {stop_date=}")
-#     query = hourly_detail(sensor=sensor, 
-#             start_date=start_date, stop_date=stop_date)
-#     current_app.logger.debug(f"{query=}")
-#     return query
