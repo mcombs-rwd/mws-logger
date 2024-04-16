@@ -1,0 +1,14 @@
+cache_path = "tests/cache"
+
+[[servers]]
+url = "sftp.nashville.gov"
+path = "/SFTP/WS_RainGauge"
+
+[[servers.files]]
+filename = "RainGaugeTotals_60Minutes_Prev48Hrs.csv"
+date_format = "MM-D-YYYY"
+
+[[servers.files.rain_gauges]]
+nickname = "Hopdle"
+name = "Hopdle_SPS"
+poll_interval = 60
